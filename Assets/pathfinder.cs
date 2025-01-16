@@ -1,14 +1,16 @@
 using Unity.VisualScripting;
+using UnityEditorInternal.VR;
 using UnityEngine;
 
 public class pathfinder : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    //private GameObject preyObj, predObj;
+    private GameObject preyObj, predObj;
     private string preyTag, predTag;
-    //private float preyDist, predDist;
+    private float preyDist, predDist;
     private SpriteRenderer sr;
     public float speed = 5f;
+    public float fear_factor = 1f;
     void Start()
     {
         sr = GetComponent<SpriteRenderer>();
@@ -17,26 +19,43 @@ public class pathfinder : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //(preyObj, preyDist) = findPrey();
-        //(predObj, predDist) = findPred();
-        //Vector2 direction = preyObj.transform.position * preyDist - predObj.transform.position * predDist;
-
-        //transform.position = Vector2.MoveTowards(this.transform.position, preyObj.transform.position, speed * Time.deltaTime);
+        (preyObj, preyDist) = findPrey();
+        (predObj, predDist) = findPred();
+        // There is no empty Vector value. Vector2.zero points to the center for some reason.
+        // I would like to use an empty Vector value so I can just do prey_dir + pred_dir * fear_factor, but I can't.
+        // Instead I have to account for each possibility.
+        if (preyObj != null && predObj != null)
+        {
+            Vector2 prey_dir = (preyObj.transform.position - transform.position);
+            Vector2 pred_dir = (transform.position - predObj.transform.position);
+            Vector2 direction = (prey_dir + pred_dir * fear_factor);
+            transform.position = Vector2.MoveTowards(transform.position, direction, speed * Time.deltaTime);
+        } else if (preyObj == null && predObj != null)
+        {
+            Vector2 pred_dir = (transform.position - predObj.transform.position);
+            Vector2 direction = (pred_dir * fear_factor);
+            transform.position = Vector2.MoveTowards(transform.position, direction, speed * Time.deltaTime);
+        } else if (predObj == null && preyObj != null)
+        {
+            Vector2 prey_dir = (preyObj.transform.position - transform.position);
+            Vector2 direction = (prey_dir);
+            transform.position = Vector2.MoveTowards(transform.position, direction, speed * Time.deltaTime);
+        }
     }
 
     public void editTag(string tag)
     {
-        Debug.Log("Edit Tag called.");
         this.tag = tag;
+        sr = GetComponent<SpriteRenderer>();
         sr.sprite = Resources.Load<Sprite>("Sprites/" + tag);
         if (tag == "Rock") { this.preyTag = "Scissors"; this.predTag = "Paper"; }
         else if (tag == "Paper") { this.preyTag = "Rock"; this.predTag = "Scissors"; }
         else if (tag == "Scissors") { this.preyTag = "Paper"; this.predTag = "Rock"; }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        editTag(predTag);
+        if (other.tag == this.predTag) { editTag(predTag); }
     }
 
     (GameObject, float) findPrey()

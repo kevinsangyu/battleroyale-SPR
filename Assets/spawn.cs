@@ -26,13 +26,16 @@ public class spawn : MonoBehaviour
         string[] tags = new string[] { "Rock", "Scissors", "Paper" };
         foreach (string tag in tags)
         {
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < 1; i++)
             {
                 GameObject clone = Instantiate(NPC, GetRandomPosition(), NPC.transform.rotation);
                 pathfinder pathfinderScript = clone.GetComponent<pathfinder>();
                 pathfinderScript.editTag(tag);
             }
         }
+        //GameObject clone = Instantiate(NPC, GetRandomPosition(), NPC.transform.rotation);
+        //pathfinder pathfinderScript = clone.GetComponent<pathfinder>();
+        //pathfinderScript.editTag("Rock");
     }
 
     Vector2 GetRandomPosition()
