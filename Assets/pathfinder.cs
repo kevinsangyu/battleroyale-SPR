@@ -10,7 +10,7 @@ public class pathfinder : MonoBehaviour
     private float preyDist, predDist;
     private SpriteRenderer sr;
     public float speed = 5f;
-    public float fear_factor = 1f;
+    public float fear_factor;
     void Start()
     {
         sr = GetComponent<SpriteRenderer>();
@@ -21,23 +21,28 @@ public class pathfinder : MonoBehaviour
     {
         (preyObj, preyDist) = findPrey();
         (predObj, predDist) = findPred();
+        //if (preyObj != null) { Debug.DrawLine(transform.position, preyObj.transform.position, Color.green); }
+        //if (predObj != null) { Debug.DrawLine(transform.position, predObj.transform.position, Color.red); }
         // There is no empty Vector value. Vector2.zero points to the center for some reason.
         // I would like to use an empty Vector value so I can just do prey_dir + pred_dir * fear_factor, but I can't.
         // Instead I have to account for each possibility.
+
         if (preyObj != null && predObj != null)
         {
-            Vector2 prey_dir = (preyObj.transform.position - transform.position);
-            Vector2 pred_dir = (transform.position - predObj.transform.position);
-            Vector2 direction = (prey_dir + pred_dir * fear_factor);
+            Vector2 prey_dir = preyObj.transform.position - transform.position;
+            Vector2 pred_dir = (predObj.transform.position - transform.position) * -1;
+            Vector2 direction = (prey_dir + pred_dir);
             transform.position = Vector2.MoveTowards(transform.position, direction, speed * Time.deltaTime);
-        } else if (preyObj == null && predObj != null)
+        }
+        else if (preyObj == null && predObj != null)
         {
-            Vector2 pred_dir = (transform.position - predObj.transform.position);
-            Vector2 direction = (pred_dir * fear_factor);
-            transform.position = Vector2.MoveTowards(transform.position, direction, speed * Time.deltaTime);
-        } else if (predObj == null && preyObj != null)
+            Vector2 pred_dir = predObj.transform.position;
+            Vector2 direction = (pred_dir) * -1;
+            transform.position = Vector2.MoveTowards(transform.position, direction, speed / 2 * Time.deltaTime); // penalty to running away
+        }
+        else if (predObj == null && preyObj != null)
         {
-            Vector2 prey_dir = (preyObj.transform.position - transform.position);
+            Vector2 prey_dir = preyObj.transform.position;
             Vector2 direction = (prey_dir);
             transform.position = Vector2.MoveTowards(transform.position, direction, speed * Time.deltaTime);
         }

@@ -374,6 +374,7 @@ MonoBehaviour:
   maxBoundsx: 45
   minBoundsy: -25
   maxBoundsy: 25
+  amount: 1
 --- !u!4 &1662978317
 Transform:
   m_ObjectHideFlags: 0

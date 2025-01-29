@@ -9,6 +9,7 @@ public class spawn : MonoBehaviour
     public float maxBoundsx;
     public float minBoundsy;
     public float maxBoundsy;
+    public int amount;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -26,7 +27,7 @@ public class spawn : MonoBehaviour
         string[] tags = new string[] { "Rock", "Scissors", "Paper" };
         foreach (string tag in tags)
         {
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < amount; i++)
             {
                 GameObject clone = Instantiate(NPC, GetRandomPosition(), NPC.transform.rotation);
                 pathfinder pathfinderScript = clone.GetComponent<pathfinder>();
